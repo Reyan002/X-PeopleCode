@@ -1,0 +1,34 @@
+Local SQL &sql;
+Local Rowset &rsLevel1;
+Local Row &row;
+
+Local string &EMPLID, &cat, &title, &grade, &location, &mode;
+Local date &start_dt, &end_dt;
+Local number &days;
+
+&sql = CreateSQL("SELECT EMPLID, X_COURSE_CATEGORY, X_COURSE_TITLE, X_CRSE_STRT_DT, X_CRSE_END_DATE, X_NO_OF_DAYS, X_COURSE_GRADE, LOCATION_DESCR, X_MODE  FROM PS_X_TRNING_IN_TBL WHERE EMPLID = :1 ORDER BY X_CRSE_END_DATE DESC", X_ELEARNING_VW.EMPLID);
+
+/*&rsLevel0 = GetLevel0();
+If &rsLevel0 = Null Then
+   MessageBox(0, "", 0, 0, "Error");
+End-If;*/
+&rsLevel1 = GetLevel0()(1).GetRowset(Scroll.X_TRNING_IN_TBL); /* Replace GRID_REC with your actual record used in the grid */
+
+
+&rsLevel1.Flush();
+
+While &sql.Fetch(&EMPLID, &cat, &title, &start_dt, &end_dt, &days, &grade, &location, &mode)
+   
+   &rsLevel1.InsertRow(&rsLevel1.ActiveRowCount);
+   &row = &rsLevel1.GetRow(&rsLevel1.ActiveRowCount);
+   &row.X_TRNING_IN_TBL.EMPLID.Value = &EMPLID;
+   &row.X_TRNING_IN_TBL.X_COURSE_CATEGORY.Value = &cat;
+   &row.X_TRNING_IN_TBL.X_COURSE_TITLE.Value = &title;
+   &row.X_TRNING_IN_TBL.X_CRSE_STRT_DT.Value = &start_dt;
+   &row.X_TRNING_IN_TBL.X_CRSE_END_DATE.Value = &end_dt;
+   &row.X_TRNING_IN_TBL.X_NO_OF_DAYS.Value = &days;
+   &row.X_TRNING_IN_TBL.X_COURSE_GRADE.Value = &grade;
+   &row.X_TRNING_IN_TBL.LOCATION_DESCR.Value = &location;
+   &row.X_TRNING_IN_TBL.X_MODE.Value = &mode;
+End-While;
+&rsLevel1.DeleteRow(1);
